@@ -87,6 +87,7 @@ public class UsuarioConverter {
 
     public List<TelefoneDTO> paraListaTelefoneDTO(List<Telefone> telefoneDTOS) {
         return telefoneDTOS.stream().map(this::paraTelefoneDTO).toList();
+        //
 
     }
     public TelefoneDTO paraTelefoneDTO(Telefone telefone) {
