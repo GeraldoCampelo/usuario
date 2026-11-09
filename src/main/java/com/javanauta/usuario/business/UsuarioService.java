@@ -21,9 +21,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +36,8 @@ public class UsuarioService {
     private final JwtUtil jwtUtil;
     private final EnderecoRepository enderecoRepository;
     private final TelefoneRepository telefoneRepository;
+
+    private static final String EMAILNAOENCONTRADO = "Email não localizado";
 
     public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) {
         emailExistente(usuarioDTO.getEmail());
@@ -101,7 +101,7 @@ public class UsuarioService {
 
         //Busca os dados do usuário no banco de dados
         Usuario usuarioEntity = usuarioRepository.findByEmail(email).orElseThrow(() ->
-                new ResourceNotFoundException("Email não localizado"));
+                new ResourceNotFoundException(EMAILNAOENCONTRADO));
 
         //Mesclou os dados que recebemos na requisição DTO com os dados do banco de dados
         Usuario usuario = usuarioConverter.updateUsuario(dto, usuarioEntity);
@@ -134,7 +134,7 @@ public class UsuarioService {
     public EnderecoDTO cadastraEndereco(String token, EnderecoDTO dto){
         String email = jwtUtil.extrairEmailToken(token.substring(7));
         Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() ->
-                new ResourceNotFoundException("Email não localizado" + email));
+                new ResourceNotFoundException(EMAILNAOENCONTRADO + email));
 
         Endereco endereco = usuarioConverter.paraEnderecoEntity(dto, usuario.getId());
         Endereco enderecoEntity = enderecoRepository.save(endereco);
@@ -145,7 +145,7 @@ public class UsuarioService {
     public TelefoneDTO cadastraTelefone(String token, TelefoneDTO dto){
         String email = jwtUtil.extrairEmailToken(token.substring(7));
         Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() ->
-                new ResourceNotFoundException("Email não localizado" + email));
+                new ResourceNotFoundException(EMAILNAOENCONTRADO + email));
 
         Telefone telefone = usuarioConverter.paraTelefoneEntity(dto, usuario.getId());
         Telefone telefoneEntity = telefoneRepository.save(telefone);
